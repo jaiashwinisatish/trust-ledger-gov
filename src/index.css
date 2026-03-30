@@ -93,4 +93,20 @@
     @apply bg-background text-foreground;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
+
+  .glass-card {
+    @apply bg-white/70 dark:bg-black/40 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-xl;
+  }
+
+  .glass-header {
+    @apply bg-white/40 dark:bg-black/20 backdrop-blur-lg border-b border-white/20 dark:border-white/10;
+  }
+
+  .premium-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  }
+
+  .glow-shadow {
+    box-shadow: 0 0 20px -5px hsl(var(--primary) / 0.3);
+  }
 }
