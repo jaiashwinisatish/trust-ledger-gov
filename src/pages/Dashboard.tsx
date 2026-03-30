@@ -96,20 +96,27 @@ export default function Dashboard() {
         setInsights(newInsights);
       }
 
-      // Chain Health
-      const { data: auditTrial } = await supabase.from("audit_logs").select("id, previous_hash, hash").order("created_at", { ascending: false }).limit(50) as any;
-      if (auditTrial && auditTrial.length > 1) {
+      // Chain Health (gracefully handles environments without blockchain columns)
+      const { data: auditTrail, error: auditTrailError } = await supabase
+        .from("audit_logs")
+        .select("id, previous_hash, hash")
+        .order("created_at", { ascending: false })
+        .limit(50) as any;
+
+      if (auditTrailError) {
+        setBlockchainStatus("connecting");
+      } else if (auditTrail && auditTrail.length > 1) {
         let healthy = true;
-        for (let i = 0; i < auditTrial.length - 1; i++) {
-          if (auditTrial[i].previous_hash !== auditTrial[i+1].hash && auditTrial[i].previous_hash !== "0".repeat(64)) {
+        for (let i = 0; i < auditTrail.length - 1; i++) {
+          if (auditTrail[i].previous_hash !== auditTrail[i + 1].hash && auditTrail[i].previous_hash !== "0".repeat(64)) {
             healthy = false;
             break;
           }
         }
+
         setBlockchainStatus(healthy ? "healthy" : "error");
-        
         if (healthy && insights.length < 4) {
-           setInsights(prev => [...prev, { title: "Node Sync", desc: "Blockchain Ledger synchronizing state.", impact: "Low", time: "Running" }]);
+          setInsights(prev => [...prev, { title: "Node Sync", desc: "Blockchain Ledger synchronizing state.", impact: "Low", time: "Running" }]);
         }
       }
     };
