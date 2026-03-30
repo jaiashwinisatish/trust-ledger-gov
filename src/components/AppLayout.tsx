@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import ChatBot from "./ChatBot";
 import SmartSearch from "./SmartSearch";
 import ThemeToggle from "./ThemeToggle";
+import LanguageToggle from "./LanguageToggle";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -26,12 +27,22 @@ const navItems = [
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
+import { useTranslation } from "react-i18next";
+
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { profile, role, signOut } = useAuth();
+  const { t } = useTranslation();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const roleLabel = role ? role.charAt(0).toUpperCase() + role.slice(1) : "";
+
+  const navItems = [
+    { to: "/dashboard", label: t("common.dashboard"), icon: LayoutDashboard },
+    { to: "/documents", label: t("common.documents"), icon: FileText },
+    { to: "/upload", label: t("common.upload"), icon: Upload },
+    { to: "/analytics", label: t("common.analytics"), icon: BarChart3 },
+  ];
 
   const filteredNavItems = navItems.filter(item => {
     if (item.to === "/analytics" && role === "citizen") return false;
@@ -54,8 +65,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               <Shield className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h2 className="font-bold text-sm leading-tight tracking-tight">TrustLedger</h2>
-              <p className="text-[10px] uppercase font-black tracking-widest opacity-50">Gov Service</p>
+              <h2 className="font-bold text-sm leading-tight tracking-tight">{t("sidebar.trustLedger")}</h2>
+              <p className="text-[10px] uppercase font-black tracking-widest opacity-50">{t("sidebar.govService")}</p>
             </div>
           </div>
         </div>
@@ -99,7 +110,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             className="w-full justify-start rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/5"
           >
             <LogOut className="h-4 w-4 mr-2" />
-            Sign Out
+            {t("common.signOut")}
           </Button>
         </div>
       </aside>
@@ -125,6 +136,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             <SmartSearch />
           </div>
           <div className="flex items-center gap-4 ml-4">
+            <LanguageToggle />
             <ThemeToggle />
             <div className="h-8 w-[1px] bg-border/50 hidden sm:block" />
             <span className="hidden sm:inline-flex items-center gap-2 px-3 py-1 bg-primary/5 border border-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-widest">

@@ -1,0 +1,100 @@
+{
+  "common": {
+    "dashboard": "डैशबोर्ड",
+    "documents": "दस्तावेज़",
+    "upload": "अपलोड",
+    "analytics": "एनालिटिक्स",
+    "signOut": "साइन आउट",
+    "back": "वापस",
+    "loading": "लोड हो रहा है...",
+    "status": {
+      "uploaded": "अपलोड किया गया",
+      "processing": "प्रसंस्करण",
+      "reviewed": "समीक्षा की गई",
+      "approved": "अनुमोदित",
+      "flagged": "चिह्नित",
+      "archived": "संग्रहीत"
+    },
+    "priority": {
+      "low": "कम",
+      "normal": "सामान्य",
+      "high": "उच्च"
+    }
+  },
+  "sidebar": {
+    "trustLedger": "ट्रस्ट लेजर",
+    "govService": "सरकारी सेवा"
+  },
+  "dashboard": {
+    "trustConsole": "ट्रस्ट कंसोल",
+    "welcome": "वापसी पर स्वागत है",
+    "managing": "{{count}} सुरक्षित रिकॉर्ड प्रबंधित किए जा रहे हैं",
+    "blockchainNode": "ब्लॉकचेन नोड",
+    "operational": "परिचालन में",
+    "desynchronized": "असमकालिक",
+    "stats": {
+      "totalAssets": "कुल संपत्ति",
+      "inAnalysis": "विश्लेषण में",
+      "riskFlags": "जोखिम संकेत",
+      "verifiedData": "सत्यापित डेटा"
+    },
+    "verificationTraffic": "सत्यापन यातायात",
+    "weeklyAnalysis": "साप्ताहिक दस्तावेज़ विश्लेषण",
+    "smartInsights": "स्मार्ट अंतर्दृष्टि",
+    "processRecord": "नया रिकॉर्ड जोड़ें",
+    "registry": "रजिस्ट्री",
+    "recentEntries": "हालिया प्रविष्टियां"
+  },
+  "docs": {
+    "registry": "क्रिप्टोग्राफी लेजर",
+    "explore": "अपरिवर्तनीय दस्तावेज़ भंडार का अन्वेषण और सत्यापन करें।",
+    "initiateBlock": "नया ब्लॉक शुरू करें",
+    "search": "आईडी, श्रेणी या सामग्री द्वारा खोजें...",
+    "neuralMatches": "न्यूरल मिलान मिले",
+    "language": "भाषा",
+    "status": "स्थिति",
+    "category": "श्रेणी",
+    "syncing": "लेजर के साथ सिंक हो रहा है...",
+    "noResults": "रजिस्ट्री खोज खाली है",
+    "neuralTrust": "न्यूरल ट्रस्ट"
+  },
+  "upload": {
+    "intakeNode": "इनटेक नोड",
+    "intakeDesc": "एक अपरिवर्तनीय रिकॉर्ड प्रविष्टि शुरू करें। हमारा न्यूरल इंजन स्वचालित रूप से दस्तावेज़ निकाल लेगा।",
+    "dropZone": "संपत्ति बंडल यहाँ छोड़ें",
+    "dropDesc": "PDF, JPG, PNG, TIFF 50MB तक समर्थित",
+    "scanning": "न्यूरल फॉरेंसिक स्कैन",
+    "preScan": "क्रिप्टोग्राफिक हस्ताक्षर निकाले जा रहे हैं...",
+    "commit": "साइन करें और लेजर में जोड़ें",
+    "committing": "ब्लॉक में जोड़ा जा रहा है...",
+    "coreMetadata": "कोर मेटाडेटा",
+    "accessControl": "पहुँच नियंत्रण"
+  },
+  "details": {
+    "forensicVision": "फॉरेंसिक दृष्टि",
+    "ocrBuffer": "OCR बफर",
+    "ledgerTrace": "लेजर ट्रेस",
+    "executiveIntelligence": "कार्यकारी इंटेलिजेंस",
+    "aiConfidence": "AI विश्वास",
+    "anomalyMatrix": "विसंगति सत्यापन मैट्रिक्स",
+    "riskScore": "जोखिम स्कोर",
+    "noVisualSource": "कोई दृश्य स्रोत नहीं",
+    "secureBuffer": "सुरक्षित बफर स्ट्रीम",
+    "finalizeValidation": "अंतिम सत्यापन",
+    "humanInLoop": "ह्यूमन-इन-द-लूप: लेजर साइन-ऑफ से पहले AI वर्गीकरण को सत्यापित करें",
+    "abortReview": "समीक्षा रद्द करें",
+    "commitToLedger": "लेजर में जोड़ें"
+  },
+  "analytics": {
+    "title": "इंटेलिजेंस और एनालिटिक्स",
+    "description": "सिस्टम-व्यापी दस्तावेज़ जीवनचक्र और AI प्रदर्शन मेट्रिक्स",
+    "insufficientData": "अपर्याप्त डेटा",
+    "uploadDataDesc": "प्रेडिक्टिव अंतर्दृष्टि उत्पन्न करने के लिए अधिक दस्तावेज़ अपलोड और प्रोसेस करें।",
+    "aiForecast": "AI इंटेलिजेंस पूर्वानुमान",
+    "verificationEfficiency": "सत्यापन दक्षता",
+    "avgProcessingTime": "औसत प्रसंस्करण समय",
+    "categoryDistribution": "श्रेणी वितरण",
+    "documentStatusFlow": "दस्तावेज़ स्थिति प्रवाह",
+    "uploadTrends": "ऐतिहासिक और अनुमानित अपलोड रुझान"
+  }
+}

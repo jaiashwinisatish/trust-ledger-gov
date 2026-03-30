@@ -40,10 +40,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Constants } from "@/integrations/supabase/types";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 
 export default function DocumentDetail() {
   const { id } = useParams<{ id: string }>();
+  const { t } = useTranslation();
   const { user, role } = useAuth();
   const navigate = useNavigate();
   const [doc, setDoc] = useState<any>(null);
@@ -173,7 +175,7 @@ export default function DocumentDetail() {
       {/* Navigation & Header Actions */}
       <div className="flex items-center justify-between">
         <Button variant="ghost" onClick={() => navigate(-1)} className="-ml-2 hover:bg-accent/50 text-muted-foreground font-black text-[10px] uppercase tracking-widest">
-          <ArrowLeft className="h-4 w-4 mr-2" /> Global Registry
+          <ArrowLeft className="h-4 w-4 mr-2" /> {t("dashboard.registry")}
         </Button>
         <div className="flex items-center gap-3">
           {doc.status === "reviewed" && !isReviewing && (
@@ -226,8 +228,8 @@ export default function DocumentDetail() {
           </div>
           <CardContent className="p-12 text-center space-y-6">
             <Brain className="h-16 w-16 text-primary animate-bounce mx-auto opacity-50" />
-            <h2 className="text-2xl font-black uppercase tracking-[0.2em] text-primary">Neural Forensic Analysis</h2>
-            <p className="text-muted-foreground text-sm font-medium">Validating cryptographic checksums and analyzing document layout...</p>
+            <h2 className="text-2xl font-black uppercase tracking-[0.2em] text-primary">{t("upload.scanning")}</h2>
+            <p className="text-muted-foreground text-sm font-medium">{t("upload.preScan")}</p>
           </CardContent>
         </Card>
       )}
@@ -242,20 +244,20 @@ export default function DocumentDetail() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="space-y-2">
                 <h2 className="text-3xl font-black uppercase tracking-tight text-primary flex items-center gap-4">
-                  <ShieldCheck className="h-8 w-8" /> Final Validation
+                  <ShieldCheck className="h-8 w-8" /> {t("details.finalizeValidation")}
                 </h2>
-                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest opacity-60">Human-in-the-loop: Verify AI classifications before ledger sign-off</p>
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest opacity-60">{t("details.humanInLoop")}</p>
               </div>
               <div className="flex items-center gap-4">
                 <Button variant="ghost" onClick={() => setIsReviewing(false)} className="h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-2xl">
-                  Abort Review
+                  {t("details.abortReview")}
                 </Button>
                 <Button 
                   onClick={handleFinalizeReview} 
                   disabled={isFinalizing}
                   className="h-12 px-10 premium-gradient border-none text-white font-black uppercase tracking-widest rounded-2xl glow-shadow"
                 >
-                  {isFinalizing ? <Loader2 className="h-5 w-5 animate-spin" /> : <><CheckCircle className="h-5 w-5 mr-3" /> Commit to Ledger</>}
+                  {isFinalizing ? <Loader2 className="h-5 w-5 animate-spin" /> : <><CheckCircle className="h-5 w-5 mr-3" /> {t("details.commitToLedger")}</>}
                 </Button>
               </div>
             </div>
@@ -334,14 +336,14 @@ export default function DocumentDetail() {
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right mr-4 hidden md:block">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Status</p>
-                <p className="text-xs font-black uppercase text-primary tracking-tighter">{doc.status}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">{t("docs.status")}</p>
+                <p className="text-xs font-black uppercase text-primary tracking-tighter">{t(`common.status.${doc.status}`)}</p>
               </div>
               <div className={cn(
                 "h-12 px-6 flex items-center rounded-2xl border-none glass-card font-black uppercase text-[10px] tracking-widest",
                 doc.priority === "high" ? "text-rose-500" : "text-primary"
               )}>
-                {doc.priority} PRIORITY
+                {t(`common.priority.${doc.priority}`)} {t("dashboard.stats.riskFlags").split(' ')[1] || "PRIORITY"}
               </div>
             </div>
           </div>
@@ -354,13 +356,13 @@ export default function DocumentDetail() {
           <Tabs defaultValue="forensic" className="w-full">
             <TabsList className="bg-accent/20 p-1.5 rounded-2xl mb-6 gap-2">
               <TabsTrigger value="forensic" className="px-8 h-10 rounded-xl text-[10px] font-black uppercase transition-all data-[state=active]:premium-gradient data-[state=active]:text-white">
-                <Eye className="h-3.5 w-3.5 mr-2" /> Forensic Vision
+                <Eye className="h-3.5 w-3.5 mr-2" /> {t("details.forensicVision")}
               </TabsTrigger>
               <TabsTrigger value="ocr" className="px-8 h-10 rounded-xl text-[10px] font-black uppercase transition-all data-[state=active]:premium-gradient data-[state=active]:text-white">
-                <Search className="h-3.5 w-3.5 mr-2" /> OCR Buffer
+                <Search className="h-3.5 w-3.5 mr-2" /> {t("details.ocrBuffer")}
               </TabsTrigger>
               <TabsTrigger value="ledger" className="px-8 h-10 rounded-xl text-[10px] font-black uppercase transition-all data-[state=active]:premium-gradient data-[state=active]:text-white">
-                <History className="h-3.5 w-3.5 mr-2" /> Ledger Trace
+                <History className="h-3.5 w-3.5 mr-2" /> {t("details.ledgerTrace")}
               </TabsTrigger>
             </TabsList>
 
@@ -370,10 +372,10 @@ export default function DocumentDetail() {
                 <CardHeader className="pb-4 flex flex-row items-center justify-between border-b border-border/50">
                   <div className="flex items-center gap-3">
                     <div className="h-8 w-8 rounded-lg premium-gradient flex items-center justify-center text-white"><Brain className="h-4 w-4" /></div>
-                    <CardTitle className="text-sm font-black uppercase tracking-widest">Executive Intelligence</CardTitle>
+                    <CardTitle className="text-sm font-black uppercase tracking-widest">{t("details.executiveIntelligence")}</CardTitle>
                   </div>
                   <Badge className="bg-primary/10 text-primary border-none text-[10px] font-black px-3 py-1">
-                    AI CONFIDENCE: {Math.round(doc.confidence_score || 0)}%
+                    {t("details.aiConfidence")}: {Math.round(doc.confidence_score || 0)}%
                   </Badge>
                 </CardHeader>
                 <CardContent className="p-8">
@@ -391,10 +393,10 @@ export default function DocumentDetail() {
               {/* Forensic Heatmap */}
               <Card className="overflow-hidden border-none glass-card">
                 <div className="p-4 bg-accent/20 border-b border-border/50 flex justify-between items-center">
-                  <span className="text-[10px] font-black uppercase tracking-widest opacity-50">Anomaly Verification Matrix</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest opacity-50">{t("details.anomalyMatrix")}</span>
                   {authenticity && (
                      <Badge variant={authenticity.is_authentic ? "outline" : "destructive"} className="text-[9px] font-black border-none uppercase tracking-widest">
-                       RISK SCORE: {authenticity.risk_score}
+                       {t("details.riskScore")}: {authenticity.risk_score}
                      </Badge>
                   )}
                 </div>
@@ -404,7 +406,7 @@ export default function DocumentDetail() {
                       imageUrl={supabase.storage.from("documents").getPublicUrl(doc.file_path).data.publicUrl}
                       zones={classification?.authenticity_check?.tamper_heatmap || []} 
                     />
-                  ) : <div className="py-32 text-center text-muted-foreground font-black uppercase text-[10px] tracking-[0.3em] opacity-20">No Visual Source</div>}
+                  ) : <div className="py-32 text-center text-muted-foreground font-black uppercase text-[10px] tracking-[0.3em] opacity-20">{t("details.noVisualSource")}</div>}
                 </CardContent>
               </Card>
 
@@ -429,7 +431,7 @@ export default function DocumentDetail() {
                   <div className="bg-[#030711] text-emerald-500 p-10 max-h-[600px] overflow-auto text-[11px] font-mono leading-relaxed selection:bg-emerald-500/20">
                     <div className="flex gap-4 mb-8 border-b border-emerald-500/10 pb-4">
                       <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className="text-[10px] font-black uppercase tracking-widest opacity-50">Secure Buffer Stream</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest opacity-50">{t("details.secureBuffer")}</span>
                     </div>
                     {doc.ocr_text || "// SYSERR: No OCR data available for current buffer."}
                   </div>

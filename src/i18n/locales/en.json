@@ -1,0 +1,100 @@
+{
+  "common": {
+    "dashboard": "Dashboard",
+    "documents": "Documents",
+    "upload": "Upload",
+    "analytics": "Analytics",
+    "signOut": "Sign Out",
+    "back": "Back",
+    "loading": "Loading...",
+    "status": {
+      "uploaded": "Uploaded",
+      "processing": "Processing",
+      "reviewed": "Reviewed",
+      "approved": "Approved",
+      "flagged": "Flagged",
+      "archived": "Archived"
+    },
+    "priority": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High"
+    }
+  },
+  "sidebar": {
+    "trustLedger": "TrustLedger",
+    "govService": "Gov Service"
+  },
+  "dashboard": {
+    "trustConsole": "Trust Console",
+    "welcome": "Welcome back",
+    "managing": "Managing {{count}} secure records",
+    "blockchainNode": "Blockchain Node",
+    "operational": "OPERATIONAL",
+    "desynchronized": "DESYNCHRONIZED",
+    "stats": {
+      "totalAssets": "Total Assets",
+      "inAnalysis": "In Analysis",
+      "riskFlags": "Risk Flags",
+      "verifiedData": "Verified Data"
+    },
+    "verificationTraffic": "Verification Traffic",
+    "weeklyAnalysis": "Weekly document throughput analysis",
+    "smartInsights": "Smart Insights",
+    "processRecord": "Process New Record",
+    "registry": "Registry",
+    "recentEntries": "Recent Entries"
+  },
+  "docs": {
+    "registry": "Cryptography Ledger",
+    "explore": "Explore and verify the global immutable document repository.",
+    "initiateBlock": "Initiate Block",
+    "search": "Search ID, Category, or Neural Content...",
+    "neuralMatches": "Neural matches detected",
+    "language": "Language",
+    "status": "Status",
+    "category": "Category",
+    "syncing": "Syncing with Ledger...",
+    "noResults": "Registry Search Empty",
+    "neuralTrust": "Neural Trust"
+  },
+  "upload": {
+    "intakeNode": "Intake Node",
+    "intakeDesc": "Initialize an immutable record entry. Our neural engine will automatically extract and classify document contents.",
+    "dropZone": "Drop Asset Bundle",
+    "dropDesc": "Supports PDF, JPG, PNG, TIFF up to 50MB",
+    "scanning": "Neural Forensic Scan",
+    "preScan": "Extracting Cryptographic Signatures...",
+    "commit": "Sign & Commit to Ledger",
+    "committing": "Committing to Block...",
+    "coreMetadata": "Core Metadata",
+    "accessControl": "Access Control"
+  },
+  "details": {
+    "forensicVision": "Forensic Vision",
+    "ocrBuffer": "OCR Buffer",
+    "ledgerTrace": "Ledger Trace",
+    "executiveIntelligence": "Executive Intelligence",
+    "aiConfidence": "AI CONFIDENCE",
+    "anomalyMatrix": "Anomaly Verification Matrix",
+    "riskScore": "RISK SCORE",
+    "noVisualSource": "No Visual Source",
+    "secureBuffer": "Secure Buffer Stream",
+    "finalizeValidation": "Final Validation",
+    "humanInLoop": "Human-in-the-loop: Verify AI classifications before ledger sign-off",
+    "abortReview": "Abort Review",
+    "commitToLedger": "Commit to Ledger"
+  },
+  "analytics": {
+    "title": "Intelligence & Analytics",
+    "description": "System-wide document lifecycle and AI performance metrics",
+    "insufficientData": "Insufficient Data",
+    "uploadDataDesc": "Upload and process more documents to generate predictive insights.",
+    "aiForecast": "AI Intelligence Forecast",
+    "verificationEfficiency": "Verification Efficiency",
+    "avgProcessingTime": "Avg. Processing Time",
+    "categoryDistribution": "Category Distribution",
+    "documentStatusFlow": "Document Status Flow",
+    "uploadTrends": "Historical & Projected Upload Trends"
+  }
+}

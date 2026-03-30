@@ -16,6 +16,7 @@ import { Constants } from "@/integrations/supabase/types";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 // Web Speech API type declaration
 declare global {
@@ -41,6 +42,7 @@ const item = {
 };
 
 export default function Documents() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [docs, setDocs] = useState<any[]>([]);
   const [search, setSearch] = useState("");
@@ -140,11 +142,11 @@ export default function Documents() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
           <Badge className="premium-gradient border-none text-white font-black tracking-[0.2em] text-[10px] py-1 px-3">RECORD REGISTRY</Badge>
-          <h1 className="text-4xl font-black tracking-tight">Cryptography Ledger</h1>
-          <p className="text-muted-foreground text-sm font-medium">Explore and verify the global immutable document repository.</p>
+          <h1 className="text-4xl font-black tracking-tight">{t("docs.registry")}</h1>
+          <p className="text-muted-foreground text-sm font-medium">{t("docs.explore")}</p>
         </div>
         <Button asChild size="lg" className="h-14 px-10 premium-gradient border-none text-white font-black uppercase tracking-widest rounded-2xl glow-shadow transition-transform hover:scale-[1.02] active:scale-[0.98]">
-          <Link to="/upload"><Upload className="h-5 w-5 mr-3" />Initiate Block</Link>
+          <Link to="/upload"><Upload className="h-5 w-5 mr-3" />{t("docs.initiateBlock")}</Link>
         </Button>
       </div>
 
@@ -157,7 +159,7 @@ export default function Documents() {
               <div className="h-6 w-[1px] bg-border group-focus-within:bg-primary/30" />
             </div>
             <Input 
-              placeholder="Search ID, Category, or Neural Content..." 
+              placeholder={t("docs.search")} 
               value={search} 
               onChange={e => setSearch(e.target.value)} 
               onFocus={() => setShowSuggestions(suggestions.length > 0)}
@@ -184,7 +186,7 @@ export default function Documents() {
                   className="absolute top-full left-0 right-0 mt-4 p-3 glass-card border-none rounded-[24px] z-50 glow-shadow"
                 >
                   <div className="px-4 py-2 mb-2 border-b border-border/50">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-primary opacity-50">Neural matches detected</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-primary opacity-50">{t("docs.neuralMatches")}</p>
                   </div>
                   {suggestions.map((s) => (
                     <button
@@ -213,7 +215,7 @@ export default function Documents() {
             <Select value={langFilter} onValueChange={setLangFilter}>
               <SelectTrigger className="w-[140px] h-12 border-none bg-transparent font-black uppercase text-[10px] tracking-widest focus:ring-0">
                 <Globe className="h-3.5 w-3.5 mr-2 text-primary" />
-                <SelectValue placeholder="Lang" />
+                <SelectValue placeholder={t("docs.language")} />
               </SelectTrigger>
               <SelectContent className="glass-card border-none rounded-2xl">
                 <SelectItem value="all" className="font-bold text-[10px] uppercase rounded-xl">Global</SelectItem>
@@ -227,19 +229,19 @@ export default function Documents() {
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[140px] h-12 border-none bg-transparent font-black uppercase text-[10px] tracking-widest focus:ring-0">
                 <Filter className="h-3.5 w-3.5 mr-2 text-primary" />
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder={t("docs.status")} />
               </SelectTrigger>
               <SelectContent className="glass-card border-none rounded-2xl">
                 <SelectItem value="all" className="font-bold text-[10px] uppercase rounded-xl">Any Status</SelectItem>
                 {Constants.public.Enums.document_status.map(s => (
-                  <SelectItem key={s} value={s} className="font-bold text-[10px] uppercase rounded-xl">{s.replace(/_/g, " ")}</SelectItem>
+                  <SelectItem key={s} value={s} className="font-bold text-[10px] uppercase rounded-xl">{t(`common.status.${s}`)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
               <SelectTrigger className="w-[160px] h-12 border-none bg-transparent font-black uppercase text-[10px] tracking-widest focus:ring-0">
                 <Zap className="h-3.5 w-3.5 mr-2 text-primary" />
-                <SelectValue placeholder="Category" />
+                <SelectValue placeholder={t("docs.category")} />
               </SelectTrigger>
               <SelectContent className="glass-card border-none rounded-2xl">
                 <SelectItem value="all" className="font-bold text-[10px] uppercase rounded-xl">All Filing</SelectItem>

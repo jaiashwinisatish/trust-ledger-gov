@@ -10,6 +10,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { useTranslation } from "react-i18next";
 
 interface DocStats {
   total: number;
@@ -45,6 +46,7 @@ const item = {
 
 export default function Dashboard() {
   const { user, role, profile } = useAuth();
+  const { t } = useTranslation();
   const [stats, setStats] = useState<DocStats>({ total: 0, pending: 0, flagged: 0, approved: 0 });
   const [recentDocs, setRecentDocs] = useState<any[]>([]);
   const [blockchainStatus, setBlockchainStatus] = useState<"connecting" | "healthy" | "error">("healthy");
@@ -87,10 +89,10 @@ export default function Dashboard() {
   }, [user]);
 
   const statCards = [
-    { label: "Total Assets", value: stats.total, icon: FileText, color: "text-blue-500", bg: "bg-blue-500/10" },
-    { label: "In Analysis", value: stats.pending, icon: Clock, color: "text-amber-500", bg: "bg-amber-500/10" },
-    { label: "Risk Flags", value: stats.flagged, icon: AlertTriangle, color: "text-rose-500", bg: "bg-rose-500/10" },
-    { label: "Verified Data", value: stats.approved, icon: ShieldCheck, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+    { label: t("dashboard.stats.totalAssets"), value: stats.total, icon: FileText, color: "text-blue-500", bg: "bg-blue-500/10" },
+    { label: t("dashboard.stats.inAnalysis"), value: stats.pending, icon: Clock, color: "text-amber-500", bg: "bg-amber-500/10" },
+    { label: t("dashboard.stats.riskFlags"), value: stats.flagged, icon: AlertTriangle, color: "text-rose-500", bg: "bg-rose-500/10" },
+    { label: t("dashboard.stats.verifiedData"), value: stats.approved, icon: ShieldCheck, color: "text-emerald-500", bg: "bg-emerald-500/10" },
   ];
 
   const statusColor: Record<string, string> = {
@@ -112,10 +114,10 @@ export default function Dashboard() {
         <div>
           <Badge className="mb-2 premium-gradient border-none text-white font-bold tracking-widest text-[10px] py-0.5 px-2">SYSTEM ACTIVE</Badge>
           <h1 className="text-3xl font-black tracking-tight">
-            Trust Console
+            {t("dashboard.trustConsole")}
           </h1>
           <p className="text-muted-foreground mt-1 text-sm font-medium">
-            Welcome back, <span className="text-foreground font-bold">{profile?.full_name || "Authorized Officer"}</span>. Managing <span className="text-primary font-bold">{stats.total} secure records</span>.
+            {t("dashboard.welcome")}, <span className="text-foreground font-bold">{profile?.full_name || "Authorized Officer"}</span>. {t("dashboard.managing", { count: stats.total })}.
           </p>
         </div>
         <div className="flex items-center gap-3 p-3 glass-card rounded-2xl glow-shadow transition-transform hover:scale-[1.02]">
@@ -124,8 +126,8 @@ export default function Dashboard() {
             blockchainStatus === "healthy" ? "bg-emerald-500" : "bg-rose-500"
           )} />
           <div>
-            <p className="text-[10px] uppercase font-black tracking-widest opacity-50 leading-none mb-1">Blockchain Node</p>
-            <p className="text-xs font-bold leading-none">{blockchainStatus === "healthy" ? "OPERATIONAL" : "DESYNCHRONIZED"}</p>
+            <p className="text-[10px] uppercase font-black tracking-widest opacity-50 leading-none mb-1">{t("dashboard.blockchainNode")}</p>
+            <p className="text-xs font-bold leading-none">{blockchainStatus === "healthy" ? t("dashboard.operational") : t("dashboard.desynchronized")}</p>
           </div>
         </div>
       </motion.div>
@@ -156,8 +158,8 @@ export default function Dashboard() {
           <Card className="border-none glass-card h-full">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle className="text-lg font-bold">Verification Traffic</CardTitle>
-                <p className="text-xs text-muted-foreground mt-1">Weekly document throughput analysis</p>
+                <CardTitle className="text-lg font-bold">{t("dashboard.verificationTraffic")}</CardTitle>
+                <p className="text-xs text-muted-foreground mt-1">{t("dashboard.weeklyAnalysis")}</p>
               </div>
               <Activity className="h-5 w-5 text-primary opacity-50" />
             </CardHeader>
@@ -199,7 +201,7 @@ export default function Dashboard() {
             <CardHeader className="border-b border-white/10 pb-4">
               <div className="flex items-center gap-2">
                 <Zap className="h-4 w-4 text-amber-400 fill-amber-400" />
-                <CardTitle className="text-sm font-black uppercase tracking-widest text-amber-400">Smart Insights</CardTitle>
+                <CardTitle className="text-sm font-black uppercase tracking-widest text-amber-400">{t("dashboard.smartInsights")}</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="p-0">
@@ -238,13 +240,13 @@ export default function Dashboard() {
         <Button size="lg" className="premium-gradient border-none h-12 px-8 rounded-2xl glow-shadow font-bold transition-all hover:scale-[1.02] active:scale-[0.98]" asChild>
           <Link to="/upload">
             <Upload className="h-5 w-5 mr-3" />
-            Process New Record
+            {t("dashboard.processRecord")}
           </Link>
         </Button>
         <Button size="lg" variant="outline" className="h-12 px-8 rounded-2xl font-bold glass-card border-none hover:bg-accent/50" asChild>
           <Link to="/documents">
             <Eye className="h-5 w-5 mr-3" />
-            Registry
+            {t("dashboard.registry")}
           </Link>
         </Button>
       </motion.div>
@@ -253,7 +255,7 @@ export default function Dashboard() {
       <motion.div variants={item}>
         <Card className="border-none glass-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-lg font-bold">Recent Entries</CardTitle>
+            <CardTitle className="text-lg font-bold">{t("dashboard.recentEntries")}</CardTitle>
             <Badge variant="outline" className="font-bold opacity-50">{recentDocs.length} Total</Badge>
           </CardHeader>
           <CardContent>
@@ -286,7 +288,7 @@ export default function Dashboard() {
                         <div className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping" />
                       )}
                       <Badge className={cn("text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg border-none", statusColor[doc.status] || "")}>
-                        {doc.status}
+                        {t(`common.status.${doc.status}`)}
                       </Badge>
                     </div>
                   </Link>

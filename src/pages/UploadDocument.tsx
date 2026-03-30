@@ -18,9 +18,11 @@ import { Constants } from "@/integrations/supabase/types";
 import type { Enums } from "@/integrations/supabase/types";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 export default function UploadDocument() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState("");
@@ -139,7 +141,7 @@ export default function UploadDocument() {
     <div className="max-w-4xl mx-auto space-y-10">
       <div className="flex items-center justify-between">
         <Button variant="ghost" onClick={() => navigate(-1)} className="-ml-2 hover:bg-accent/50 text-muted-foreground font-black text-[10px] uppercase tracking-widest">
-          <ArrowLeft className="h-4 w-4 mr-2" /> Abort Mission
+          <ArrowLeft className="h-4 w-4 mr-2" /> {t("common.back")}
         </Button>
         <div className="flex items-center gap-3">
            <Badge className="bg-primary/10 text-primary border-none text-[10px] font-black px-3 py-1">SECURE NODE: ACTIVE</Badge>
@@ -148,8 +150,8 @@ export default function UploadDocument() {
       </div>
 
       <div className="space-y-4 text-center md:text-left">
-        <h1 className="text-4xl font-black tracking-tight leading-none">Intake Node</h1>
-        <p className="text-muted-foreground font-medium text-lg max-w-xl">Initialize an immutable record entry. Our neural engine will automatically extract and classify document contents.</p>
+        <h1 className="text-4xl font-black tracking-tight leading-none">{t("upload.intakeNode")}</h1>
+        <p className="text-muted-foreground font-medium text-lg max-w-xl">{t("upload.intakeDesc")}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-10">
@@ -176,8 +178,8 @@ export default function UploadDocument() {
                   <Brain className="h-10 w-10 text-primary absolute inset-0 m-auto animate-bounce" />
                 </div>
                 <div className="text-center space-y-1">
-                  <p className="text-sm font-black uppercase tracking-[0.4em] text-primary">Neural Forensic Scan</p>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60">Extracting Cryptographic Signatures...</p>
+                  <p className="text-sm font-black uppercase tracking-[0.4em] text-primary">{t("upload.scanning")}</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60">{t("upload.preScan")}</p>
                 </div>
               </motion.div>
             )}
@@ -207,8 +209,8 @@ export default function UploadDocument() {
                     <Upload className="h-10 w-10 group-hover:scale-110 transition-transform" />
                   </div>
                   <div className="space-y-2">
-                    <p className="font-black uppercase tracking-[0.3em] text-sm">Drop Asset Bundle</p>
-                    <p className="text-[10px] font-black text-muted-foreground opacity-40 uppercase tracking-widest">Supports PDF, JPG, PNG, TIFF up to 50MB</p>
+                    <p className="font-black uppercase tracking-[0.3em] text-sm">{t("upload.dropZone")}</p>
+                    <p className="text-[10px] font-black text-muted-foreground opacity-40 uppercase tracking-widest">{t("upload.dropDesc")}</p>
                   </div>
                 </div>
               )}
@@ -225,7 +227,7 @@ export default function UploadDocument() {
           <div className="space-y-8">
             <div className="flex items-center gap-3 mb-2">
                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary"><Cpu className="h-4 w-4" /></div>
-               <h2 className="text-xl font-black uppercase tracking-tight">Core Metadata</h2>
+               <h2 className="text-xl font-black uppercase tracking-tight">{t("upload.coreMetadata")}</h2>
             </div>
             
             <div className="space-y-6">
@@ -238,7 +240,7 @@ export default function UploadDocument() {
               </div>
 
               <div className="space-y-3">
-                <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Filing Group</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">{t("docs.category")}</Label>
                 <Select value={category} onValueChange={v => setCategory(v as Enums<"document_category">)}>
                   <SelectTrigger className="h-14 border-none glass-card rounded-2xl font-black uppercase tracking-widest text-xs px-6">
                     <SelectValue />
@@ -256,7 +258,7 @@ export default function UploadDocument() {
           <div className="space-y-8">
             <div className="flex items-center gap-3 mb-2">
                <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500"><ShieldCheck className="h-4 w-4" /></div>
-               <h2 className="text-xl font-black uppercase tracking-tight">Access Control</h2>
+               <h2 className="text-xl font-black uppercase tracking-tight">{t("upload.accessControl")}</h2>
             </div>
 
             <div className="space-y-6">
@@ -280,7 +282,7 @@ export default function UploadDocument() {
                           : "text-muted-foreground hover:bg-accent/50"
                       )}
                     >
-                      {p}
+                      {t(`common.priority.${p}`)}
                     </button>
                   ))}
                 </div>
@@ -295,9 +297,9 @@ export default function UploadDocument() {
           disabled={!file || !title || uploading || isScanning}
         >
           {uploading ? (
-            <><Loader2 className="h-6 w-6 mr-4 animate-spin" /> Committing to Block...</>
+            <><Loader2 className="h-6 w-6 mr-4 animate-spin" /> {t("upload.committing")}</>
           ) : (
-            <><Zap className="h-7 w-7 mr-4 text-emerald-300" /> Sign & Commit to Ledger</>
+            <><Zap className="h-7 w-7 mr-4 text-emerald-300" /> {t("upload.commit")}</>
           )}
         </Button>
       </form>

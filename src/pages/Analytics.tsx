@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
 import { BarChart3, Shield } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const COLORS = [
   "hsl(213, 94%, 54%)",
@@ -16,6 +17,7 @@ const COLORS = [
 ];
 
 export default function Analytics() {
+  const { t } = useTranslation();
   const [categoryData, setCategoryData] = useState<any[]>([]);
   const [statusData, setStatusData] = useState<any[]>([]);
   const [trendData, setTrendData] = useState<any[]>([]);
@@ -63,7 +65,7 @@ export default function Analytics() {
         }
         newInsights.push("Land Records category expected to surge in the next quarter based on seasonal trends.");
       } else {
-        newInsights.push("Awaiting more data for deep predictive analysis.");
+        newInsights.push(t("analytics.uploadDataDesc"));
       }
       setInsights(newInsights);
     };
@@ -79,8 +81,8 @@ export default function Analytics() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Intelligence & Analytics</h1>
-          <p className="text-muted-foreground mt-1 text-sm">System-wide document lifecycle and AI performance metrics</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t("analytics.title")}</h1>
+          <p className="text-muted-foreground mt-1 text-sm">{t("analytics.description")}</p>
         </div>
       </div>
 
@@ -88,8 +90,8 @@ export default function Analytics() {
         <Card className="border-dashed">
           <CardContent className="py-20 text-center text-muted-foreground">
             <BarChart3 className="h-10 w-10 mx-auto mb-4 opacity-20" />
-            <p className="font-medium">Insufficient Data</p>
-            <p className="text-sm mt-1">Upload and process more documents to generate predictive insights.</p>
+            <p className="font-medium">{t("analytics.insufficientData")}</p>
+            <p className="text-sm mt-1">{t("analytics.uploadDataDesc")}</p>
           </CardContent>
         </Card>
       ) : (
@@ -99,7 +101,7 @@ export default function Analytics() {
             <Card className="md:col-span-1 border-l-4 border-l-accent">
               <CardHeader className="pb-2">
                 <CardTitle className="text-xs font-bold uppercase tracking-widest text-accent flex items-center gap-2">
-                  <Shield className="h-4 w-4" /> AI Intelligence Forecast
+                  <Shield className="h-4 w-4" /> {t("analytics.aiForecast")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -114,14 +116,14 @@ export default function Analytics() {
 
             <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Card>
-                <CardHeader className="pb-2"><CardTitle className="text-[10px] uppercase text-muted-foreground">Verification Efficiency</CardTitle></CardHeader>
+                <CardHeader className="pb-2"><CardTitle className="text-[10px] uppercase text-muted-foreground">{t("analytics.verificationEfficiency")}</CardTitle></CardHeader>
                 <CardContent>
                   <p className="text-2xl font-black">94.2%</p>
                   <p className="text-[10px] text-[hsl(var(--success))] font-bold">+2.4% from average</p>
                 </CardContent>
               </Card>
               <Card>
-                <CardHeader className="pb-2"><CardTitle className="text-[10px] uppercase text-muted-foreground">Avg. Processing Time</CardTitle></CardHeader>
+                <CardHeader className="pb-2"><CardTitle className="text-[10px] uppercase text-muted-foreground">{t("analytics.avgProcessingTime")}</CardTitle></CardHeader>
                 <CardContent>
                   <p className="text-2xl font-black">1.8s</p>
                   <p className="text-[10px] text-[hsl(var(--success))] font-bold">-0.5s optimization</p>
@@ -133,7 +135,7 @@ export default function Analytics() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Category Distribution */}
             <Card>
-              <CardHeader><CardTitle className="text-sm font-bold">Category Distribution</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-sm font-bold">{t("analytics.categoryDistribution")}</CardTitle></CardHeader>
               <CardContent>
                 <ChartContainer config={chartConfig} className="h-[250px]">
                   <BarChart data={categoryData} layout="vertical">
@@ -148,11 +150,11 @@ export default function Analytics() {
 
             {/* Status Distribution */}
             <Card>
-              <CardHeader><CardTitle className="text-sm font-bold">Document Status Flow</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-sm font-bold">{t("analytics.documentStatusFlow")}</CardTitle></CardHeader>
               <CardContent>
                 <ChartContainer config={chartConfig} className="h-[250px]">
                   <PieChart>
-                    <Pie data={statusData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, value }) => `${name}: ${value}`}>
+                    <Pie data={statusData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, value }) => `${t(`common.status.${name}`)}: ${value}`}>
                       {statusData.map((_, i) => (
                         <Cell key={i} fill={COLORS[i % COLORS.length]} />
                       ))}
@@ -165,7 +167,7 @@ export default function Analytics() {
 
             {/* Upload Trends */}
             <Card className="lg:col-span-2">
-              <CardHeader><CardTitle className="text-sm font-bold">Historical & Projected Upload Trends</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-sm font-bold">{t("analytics.uploadTrends")}</CardTitle></CardHeader>
               <CardContent>
                 <ChartContainer config={chartConfig} className="h-[300px]">
                   <LineChart data={trendData}>
