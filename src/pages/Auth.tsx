@@ -40,75 +40,75 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-      <div className="w-full max-w-md space-y-6">
-        <div className="text-center space-y-2">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+      <div className="w-full max-w-md space-y-10">
+        <div className="text-center space-y-4">
           <div className="flex justify-center">
-            <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center">
-              <Shield className="h-8 w-8 text-primary-foreground" />
+            <div className="h-20 w-20 bg-primary flex items-center justify-center">
+              <Shield className="h-10 w-10 text-primary-foreground" />
             </div>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            Government Document Portal
+          <h1 className="text-4xl font-serif font-bold tracking-tight text-foreground">
+            Trust Ledger
           </h1>
-          <p className="text-muted-foreground text-sm flex items-center justify-center gap-1">
+          <p className="text-muted-foreground text-sm font-mono uppercase tracking-widest flex items-center justify-center gap-2">
             <FileText className="h-4 w-4" />
-            Secure Digital Document Management
+            Secure Digital Access
           </p>
         </div>
 
-        <Card className="border-border/60">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-lg">{isLogin ? "Sign In" : "Create Account"}</CardTitle>
-            <CardDescription>
-              {isLogin ? "Enter your credentials to access the portal" : "Register for a new account"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {!isLogin && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="fullName">Full Name</Label>
-                    <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} placeholder="Enter your full name" required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="role">Role</Label>
-                    <Select value={role} onValueChange={(v) => setRole(v as Enums<"app_role">)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="citizen">Citizen</SelectItem>
-                        <SelectItem value="officer">Officer</SelectItem>
-                        <SelectItem value="admin">Administrator</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </>
-              )}
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="name@gov.org" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required />
-              </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Please wait..." : isLogin ? "Sign In" : "Create Account"}
-              </Button>
-            </form>
-            <div className="mt-4 text-center">
-              <button onClick={() => setIsLogin(!isLogin)} className="text-sm text-accent hover:underline">
-                {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
-              </button>
+        <div className="bg-card border-2 border-border p-8">
+          <div className="pb-6">
+            <h2 className="text-xl font-bold font-serif">{isLogin ? "Authentication" : "Registration"}</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              {isLogin ? "Provide your credentials to access the ledger." : "Register for a secure portal account."}
+            </p>
+          </div>
+          
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {!isLogin && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="fullName" className="font-bold uppercase text-xs tracking-wider">Full Name</Label>
+                  <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} placeholder="Authorized Name" required className="h-12 border-2 border-border rounded-none focus-visible:border-primary focus-visible:ring-0" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="role" className="font-bold uppercase text-xs tracking-wider">Designation</Label>
+                  <Select value={role} onValueChange={(v) => setRole(v as Enums<"app_role">)}>
+                    <SelectTrigger className="h-12 border-2 border-border rounded-none focus:ring-0">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="border-2 border-border rounded-none">
+                      <SelectItem value="citizen" className="rounded-none">Citizen</SelectItem>
+                      <SelectItem value="officer" className="rounded-none">Officer</SelectItem>
+                      <SelectItem value="admin" className="rounded-none">Administrator</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="email" className="font-bold uppercase text-xs tracking-wider">Identity</Label>
+              <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="name@gov.org" required className="h-12 border-2 border-border rounded-none focus-visible:border-primary focus-visible:ring-0" />
             </div>
-          </CardContent>
-        </Card>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="font-bold uppercase text-xs tracking-wider">Passphrase</Label>
+              <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required className="h-12 border-2 border-border rounded-none focus-visible:border-primary focus-visible:ring-0" />
+            </div>
+            <Button type="submit" className="w-full h-12 rounded-none font-bold uppercase tracking-wider text-sm mt-4" disabled={loading}>
+              {loading ? "Verifying..." : isLogin ? "Access Ledger" : "Initialize Account"}
+            </Button>
+          </form>
+          
+          <div className="mt-6 pt-6 border-t-2 border-border text-center">
+            <button onClick={() => setIsLogin(!isLogin)} className="text-sm font-bold text-primary hover:underline">
+              {isLogin ? "Require an account? Register" : "Existing account? Return to Auth"}
+            </button>
+          </div>
+        </div>
 
-        <p className="text-center text-xs text-muted-foreground">
-          Official Government Document Management System • Secured & Encrypted
+        <p className="text-center text-xs font-mono uppercase tracking-widest text-muted-foreground">
+          Protected by Next-Gen Cryptography
         </p>
       </div>
     </div>

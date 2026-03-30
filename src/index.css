@@ -4,82 +4,97 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 215 25% 15%;
+    /* Token: surface=#FFFFFF | secondary=#F6F6F1 */
+    --background: 60 21% 95%; /* #F6F6F1 mapped to app background */
+    --foreground: 215 28% 11%; /* #111827 */
 
+    /* Token: surface=#FFFFFF */
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 15%;
-
+    --card-foreground: 215 28% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 15%;
+    --popover-foreground: 215 28% 11%;
 
-    --primary: 213 56% 24%;
-    --primary-foreground: 210 40% 98%;
+    /* Token: primary=#FF5701 */
+    --primary: 20 100% 50%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 214 32% 91%;
-    --secondary-foreground: 213 56% 24%;
+    /* secondary mapped to surface for contrast in components */
+    --secondary: 0 0% 100%;
+    --secondary-foreground: 215 28% 11%;
 
-    --muted: 214 32% 95%;
+    --muted: 60 10% 90%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 213 94% 54%;
+    --accent: 20 100% 50%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    /* Token: danger=#DC2626 */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 89%;
-    --input: 214 32% 89%;
-    --ring: 213 56% 24%;
+    --border: 60 10% 85%;
+    --input: 60 10% 85%;
+    --ring: 20 100% 50%;
 
-    --radius: 0.5rem;
+    --radius: 0rem; /* Modern, bold, no extra rounding by default unless specified */
 
-    --sidebar-background: 213 56% 17%;
-    --sidebar-foreground: 210 40% 92%;
-    --sidebar-primary: 213 94% 54%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 215 28% 11%;
+    --sidebar-primary: 20 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 213 56% 22%;
-    --sidebar-accent-foreground: 210 40% 92%;
-    --sidebar-border: 213 40% 25%;
-    --sidebar-ring: 213 94% 54%;
+    --sidebar-accent: 60 21% 95%;
+    --sidebar-accent-foreground: 215 28% 11%;
+    --sidebar-border: 60 10% 85%;
+    --sidebar-ring: 20 100% 50%;
 
-    --success: 142 71% 45%;
+    /* Token: success=#16A34A | warning=#D97706 */
+    --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
+    --warning: 38 92% 44%;
     --warning-foreground: 0 0% 100%;
   }
 
   .dark {
-    --background: 215 25% 8%;
-    --foreground: 210 40% 92%;
-    --card: 215 25% 11%;
-    --card-foreground: 210 40% 92%;
-    --popover: 215 25% 11%;
-    --popover-foreground: 210 40% 92%;
-    --primary: 213 94% 54%;
+    /* Dark mode inverted while maintaining brand */
+    --background: 215 28% 11%; /* #111827 */
+    --foreground: 60 21% 95%; /* #F6F6F1 */
+
+    --card: 215 25% 15%; /* Slight offset from bg */
+    --card-foreground: 60 21% 95%;
+    --popover: 215 25% 15%;
+    --popover-foreground: 60 21% 95%;
+
+    --primary: 20 100% 50%; /* #FF5701 stays vibrant */
     --primary-foreground: 0 0% 100%;
-    --secondary: 215 25% 18%;
-    --secondary-foreground: 210 40% 92%;
-    --muted: 215 25% 18%;
+
+    --secondary: 215 25% 15%;
+    --secondary-foreground: 60 21% 95%;
+
+    --muted: 215 25% 20%;
     --muted-foreground: 215 16% 60%;
-    --accent: 213 94% 54%;
+
+    --accent: 20 100% 50%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 215 25% 20%;
-    --input: 215 25% 20%;
-    --ring: 213 94% 54%;
-    --sidebar-background: 215 25% 6%;
-    --sidebar-foreground: 210 40% 92%;
-    --sidebar-primary: 213 94% 54%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 215 25% 25%;
+    --input: 215 25% 25%;
+    --ring: 20 100% 50%;
+
+    --sidebar-background: 215 25% 15%;
+    --sidebar-foreground: 60 21% 95%;
+    --sidebar-primary: 20 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 215 25% 12%;
-    --sidebar-accent-foreground: 210 40% 92%;
-    --sidebar-border: 215 25% 15%;
-    --sidebar-ring: 213 94% 54%;
-    --success: 142 71% 45%;
+    --sidebar-accent: 215 28% 11%;
+    --sidebar-accent-foreground: 60 21% 95%;
+    --sidebar-border: 215 25% 25%;
+    --sidebar-ring: 20 100% 50%;
+
+    --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
+    --warning: 38 92% 44%;
     --warning-foreground: 0 0% 100%;
   }
 }
@@ -91,22 +106,23 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
+  /* Clear out legacy glass effects for bold design */
   .glass-card {
-    @apply bg-white/70 dark:bg-black/40 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-xl;
+    @apply bg-card border-2 shadow-none;
   }
 
   .glass-header {
-    @apply bg-white/40 dark:bg-black/20 backdrop-blur-lg border-b border-white/20 dark:border-white/10;
+    @apply bg-background border-b-2;
   }
 
   .premium-gradient {
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+    @apply bg-primary;
   }
 
   .glow-shadow {
-    box-shadow: 0 0 20px -5px hsl(var(--primary) / 0.3);
+    box-shadow: none;
   }
 }
+

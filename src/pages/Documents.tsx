@@ -130,47 +130,57 @@ export default function Documents() {
   });
 
   const statusColor: Record<string, string> = {
-    uploaded: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-    processing: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+    uploaded: "bg-muted text-muted-foreground",
+    processing: "bg-warning/20 text-warning",
     reviewed: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-    approved: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-    flagged: "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400",
+    approved: "bg-success/20 text-success",
+    flagged: "bg-destructive/20 text-destructive",
+  };
+
+  const statusBorder: Record<string, string> = {
+    uploaded: "border-muted-foreground",
+    processing: "border-warning",
+    reviewed: "border-blue-500",
+    approved: "border-success",
+    flagged: "border-destructive",
   };
 
   return (
     <div className="space-y-10">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
-          <Badge className="premium-gradient border-none text-white font-black tracking-[0.2em] text-[10px] py-1 px-3">RECORD REGISTRY</Badge>
-          <h1 className="text-4xl font-black tracking-tight">{t("docs.registry")}</h1>
+          <Badge className="bg-primary text-primary-foreground border-none font-black uppercase tracking-widest text-[10px] py-1 px-3">
+            RECORD REGISTRY
+          </Badge>
+          <h1 className="text-4xl font-serif font-bold tracking-tight">{t("docs.registry")}</h1>
           <p className="text-muted-foreground text-sm font-medium">{t("docs.explore")}</p>
         </div>
-        <Button asChild size="lg" className="h-14 px-10 premium-gradient border-none text-white font-black uppercase tracking-widest rounded-2xl glow-shadow transition-transform hover:scale-[1.02] active:scale-[0.98]">
+        <Button asChild size="lg" className="h-14 px-10 bg-primary text-primary-foreground rounded-none font-bold uppercase tracking-widest transition-transform hover:-translate-y-1">
           <Link to="/upload"><Upload className="h-5 w-5 mr-3" />{t("docs.initiateBlock")}</Link>
         </Button>
       </div>
 
       {/* Discovery Dashboard (Smart Search) */}
-      <div className="glass-card border-none rounded-[32px] p-2">
-        <div className="flex flex-col lg:flex-row gap-2 relative">
+      <div className="bg-card border-2 border-border p-4">
+        <div className="flex flex-col lg:flex-row gap-4 relative">
           <div className="relative flex-1 group">
-            <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-4">
+            <div className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 flex items-center gap-4">
               <Search className="h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-              <div className="h-6 w-[1px] bg-border group-focus-within:bg-primary/30" />
+              <div className="h-6 w-0.5 bg-border group-focus-within:bg-primary hidden md:block" />
             </div>
             <Input 
               placeholder={t("docs.search")} 
               value={search} 
               onChange={e => setSearch(e.target.value)} 
               onFocus={() => setShowSuggestions(suggestions.length > 0)}
-              className="pl-16 pr-14 h-16 border-none bg-transparent focus-visible:ring-0 text-lg font-bold tracking-tight" 
+              className="pl-12 md:pl-20 pr-12 md:pr-16 h-14 border-2 border-border bg-background focus-visible:border-primary focus-visible:ring-0 rounded-none text-base md:text-lg font-bold tracking-tight truncate" 
             />
             <button 
               type="button"
               onClick={toggleListening}
               className={cn(
-                "absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-xl flex items-center justify-center transition-all",
-                isListening ? "bg-rose-500 text-white animate-pulse shadow-lg shadow-rose-500/20" : "bg-primary/10 text-primary hover:bg-primary/20"
+                "absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 flex items-center justify-center transition-colors",
+                isListening ? "bg-destructive text-destructive-foreground animate-pulse" : "text-muted-foreground hover:bg-muted"
               )}
             >
               {isListening ? <Volume2 className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
@@ -183,27 +193,30 @@ export default function Documents() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="absolute top-full left-0 right-0 mt-4 p-3 glass-card border-none rounded-[24px] z-50 glow-shadow"
+                  className="absolute top-full left-0 right-0 mt-2 bg-card border-2 border-border z-50 shadow-2xl"
                 >
-                  <div className="px-4 py-2 mb-2 border-b border-border/50">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-primary opacity-50">{t("docs.neuralMatches")}</p>
+                  <div className="px-4 py-2 border-b-2 border-border bg-muted/50">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("docs.neuralMatches")}</p>
                   </div>
-                  {suggestions.map((s) => (
+                  {suggestions.map((s, idx) => (
                     <button
                       key={s.id}
                       onClick={() => navigate(`/documents/${s.id}`)}
-                      className="w-full flex items-center justify-between p-4 hover:bg-primary/5 rounded-[20px] transition-all group/item"
+                      className={cn(
+                        "w-full flex items-center justify-between p-4 hover:bg-muted transition-colors group/item text-left",
+                        idx !== suggestions.length - 1 && "border-b-2 border-border"
+                      )}
                     >
                       <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover/item:premium-gradient group-hover/item:text-white transition-all">
+                        <div className="h-10 w-10 bg-primary/10 flex items-center justify-center text-primary group-hover/item:bg-primary group-hover/item:text-primary-foreground transition-all">
                           <FileText className="h-5 w-5" />
                         </div>
                         <div className="text-left leading-none">
-                          <p className="text-sm font-black tracking-tight mb-1">{s.title}</p>
-                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">{s.category.replace(/_/g, " ")} • {s.id.slice(0, 8)}</p>
+                          <p className="text-sm font-bold tracking-tight mb-1">{s.title}</p>
+                          <p className="text-[10px] lowercase font-mono text-muted-foreground opacity-80">{s.category.replace(/_/g, " ")} | {s.id.slice(0, 8)}</p>
                         </div>
                       </div>
-                      <ChevronRight className="h-4 w-4 text-primary opacity-0 group-hover/item:opacity-100 group-hover/item:translate-x-1 transition-all" />
+                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover/item:text-foreground transition-all" />
                     </button>
                   ))}
                 </motion.div>
@@ -211,42 +224,42 @@ export default function Documents() {
             </AnimatePresence>
           </div>
 
-          <div className="flex gap-2 p-2 shrink-0 bg-accent/10 rounded-[28px]">
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:flex lg:flex-nowrap gap-2 w-full lg:w-auto">
             <Select value={langFilter} onValueChange={setLangFilter}>
-              <SelectTrigger className="w-[140px] h-12 border-none bg-transparent font-black uppercase text-[10px] tracking-widest focus:ring-0">
-                <Globe className="h-3.5 w-3.5 mr-2 text-primary" />
+              <SelectTrigger className="w-full lg:w-[140px] h-14 border-2 border-border rounded-none bg-background font-bold uppercase text-[10px] tracking-widest focus:ring-0">
+                <Globe className="h-4 w-4 mr-2 text-primary" />
                 <SelectValue placeholder={t("docs.language")} />
               </SelectTrigger>
-              <SelectContent className="glass-card border-none rounded-2xl">
-                <SelectItem value="all" className="font-bold text-[10px] uppercase rounded-xl">Global</SelectItem>
-                <SelectItem value="en" className="font-bold text-[10px] uppercase rounded-xl">English</SelectItem>
-                <SelectItem value="hi" className="font-bold text-[10px] uppercase rounded-xl">Hindi</SelectItem>
-                <SelectItem value="ta" className="font-bold text-[10px] uppercase rounded-xl">Tamil</SelectItem>
-                <SelectItem value="es" className="font-bold text-[10px] uppercase rounded-xl">Spanish</SelectItem>
+              <SelectContent className="border-2 border-border rounded-none bg-card">
+                <SelectItem value="all" className="font-bold text-[10px] uppercase rounded-none focus:bg-primary focus:text-primary-foreground">Global</SelectItem>
+                <SelectItem value="en" className="font-bold text-[10px] uppercase rounded-none focus:bg-primary focus:text-primary-foreground">English</SelectItem>
+                <SelectItem value="hi" className="font-bold text-[10px] uppercase rounded-none focus:bg-primary focus:text-primary-foreground">Hindi</SelectItem>
+                <SelectItem value="ta" className="font-bold text-[10px] uppercase rounded-none focus:bg-primary focus:text-primary-foreground">Tamil</SelectItem>
+                <SelectItem value="es" className="font-bold text-[10px] uppercase rounded-none focus:bg-primary focus:text-primary-foreground">Spanish</SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[140px] h-12 border-none bg-transparent font-black uppercase text-[10px] tracking-widest focus:ring-0">
-                <Filter className="h-3.5 w-3.5 mr-2 text-primary" />
+              <SelectTrigger className="w-full lg:w-[140px] h-14 border-2 border-border rounded-none bg-background font-bold uppercase text-[10px] tracking-widest focus:ring-0">
+                <Filter className="h-4 w-4 mr-2 text-primary" />
                 <SelectValue placeholder={t("docs.status")} />
               </SelectTrigger>
-              <SelectContent className="glass-card border-none rounded-2xl">
-                <SelectItem value="all" className="font-bold text-[10px] uppercase rounded-xl">Any Status</SelectItem>
+              <SelectContent className="border-2 border-border rounded-none bg-card">
+                <SelectItem value="all" className="font-bold text-[10px] uppercase rounded-none focus:bg-primary focus:text-primary-foreground">Any Status</SelectItem>
                 {Constants.public.Enums.document_status.map(s => (
-                  <SelectItem key={s} value={s} className="font-bold text-[10px] uppercase rounded-xl">{t(`common.status.${s}`)}</SelectItem>
+                  <SelectItem key={s} value={s} className="font-bold text-[10px] uppercase rounded-none focus:bg-primary focus:text-primary-foreground">{t(`common.status.${s}`)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-[160px] h-12 border-none bg-transparent font-black uppercase text-[10px] tracking-widest focus:ring-0">
-                <Zap className="h-3.5 w-3.5 mr-2 text-primary" />
+              <SelectTrigger className="w-full lg:w-[160px] h-14 border-2 border-border rounded-none bg-background font-bold uppercase text-[10px] tracking-widest focus:ring-0">
+                <Zap className="h-4 w-4 mr-2 text-primary" />
                 <SelectValue placeholder={t("docs.category")} />
               </SelectTrigger>
-              <SelectContent className="glass-card border-none rounded-2xl">
-                <SelectItem value="all" className="font-bold text-[10px] uppercase rounded-xl">All Filing</SelectItem>
+              <SelectContent className="border-2 border-border rounded-none bg-card">
+                <SelectItem value="all" className="font-bold text-[10px] uppercase rounded-none focus:bg-primary focus:text-primary-foreground">All Filing</SelectItem>
                 {Constants.public.Enums.document_category.map(c => (
-                  <SelectItem key={c} value={c} className="font-bold text-[10px] uppercase rounded-xl">{c.replace(/_/g, " ")}</SelectItem>
+                  <SelectItem key={c} value={c} className="font-bold text-[10px] uppercase rounded-none focus:bg-primary focus:text-primary-foreground">{c.replace(/_/g, " ")}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -258,57 +271,53 @@ export default function Documents() {
       <div className="space-y-4">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 space-y-4">
-            <Loader2 className="h-12 w-12 animate-spin text-primary opacity-20" />
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-30">Syncing with Ledger...</p>
+            <Loader2 className="h-12 w-12 animate-spin text-primary opacity-50" />
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Syncing with Ledger...</p>
           </div>
         ) : filtered.length === 0 ? (
-          <Card className="border-dashed border-2 border-primary/10 bg-accent/5 py-32 text-center rounded-[32px]">
-            <Search className="h-16 w-16 mx-auto mb-6 text-primary opacity-10" />
-            <p className="font-black uppercase text-xs text-muted-foreground tracking-widest">Registry Search Empty</p>
+          <Card className="border-2 border-border border-dashed bg-muted/20 py-32 text-center rounded-none shadow-none">
+            <Search className="h-16 w-16 mx-auto mb-6 text-muted-foreground opacity-50" />
+            <p className="font-bold uppercase text-sm text-foreground tracking-widest">Registry Search Empty</p>
           </Card>
         ) : (
           <motion.div 
             variants={container}
             initial="hidden"
             animate="show"
-            className="grid grid-cols-1 gap-4"
+            className="flex flex-col gap-4"
           >
             {filtered.map(doc => (
               <motion.div key={doc.id} variants={item}>
                 <Link to={`/documents/${doc.id}`} className="group block">
-                  <Card className="border-none glass-card hover:glow-shadow transition-all duration-500 rounded-[28px] overflow-hidden group-hover:-translate-y-1">
+                  <Card className={cn("border-2 rounded-none bg-card shadow-none transition-all hover:bg-muted/30 hover:-translate-y-1 relative overflow-hidden", statusBorder[doc.status])}>
                     <CardContent className="p-0">
-                      <div className="flex items-stretch min-h-[100px]">
-                        <div className={cn("w-2", statusColor[doc.status]?.split(" ")[0])} />
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 gap-6">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-6 min-w-0">
+                          <div className="h-16 w-16 bg-muted border-2 border-border group-hover:bg-primary flex items-center justify-center text-muted-foreground group-hover:text-primary-foreground transition-colors shrink-0 relative">
+                            <FileText className="h-8 w-8" />
+                            {doc.flagged && <div className="absolute -top-1 -right-1 h-3 w-3 bg-destructive rounded-none border-2 border-background animate-pulse" />}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h3 className="font-bold text-xl tracking-tight truncate">{doc.title}</h3>
+                              {doc.confidence_score > 85 && <Sparkles className="h-4 w-4 text-warning animate-pulse" />}
+                            </div>
+                            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[10px] font-mono uppercase text-muted-foreground tracking-widest">
+                               <span className="flex items-center gap-1.5"><Database className="h-3 w-3" /> {doc.category.replace(/_/g, " ")}</span>
+                               <span className="flex items-center gap-1.5"><Clock className="h-3 w-3" /> {format(new Date(doc.created_at), "MMM d, yyyy")}</span>
+                               <span className="text-primary font-bold">BLOCK::{doc.id.slice(0, 8)}</span>
+                            </div>
+                          </div>
+                        </div>
                         
-                        <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between p-6 sm:p-8 gap-6">
-                          <div className="flex items-center gap-6 min-w-0">
-                            <div className="h-16 w-16 rounded-[22px] bg-accent/20 group-hover:premium-gradient flex items-center justify-center text-muted-foreground group-hover:text-white transition-all duration-500 shrink-0 relative">
-                              <FileText className="h-8 w-8" />
-                              {doc.flagged && <div className="absolute -top-1 -right-1 h-4 w-4 bg-rose-500 rounded-full border-4 border-background animate-pulse" />}
-                            </div>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-3 mb-1">
-                                <h3 className="font-black text-xl tracking-tight leading-none group-hover:text-primary transition-colors truncate">{doc.title}</h3>
-                                {doc.confidence_score > 85 && <Sparkles className="h-4 w-4 text-primary animate-pulse" />}
-                              </div>
-                              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[10px] font-black uppercase text-muted-foreground tracking-widest opacity-60">
-                                 <span className="flex items-center gap-2"><Database className="h-3.5 w-3.5 text-primary" /> {doc.category.replace(/_/g, " ")}</span>
-                                 <span className="flex items-center gap-2"><Clock className="h-3.5 w-3.5 text-primary" /> {format(new Date(doc.created_at), "MMM d, yyyy")}</span>
-                                 <span className="text-primary/60 font-black">BLOCK::{doc.id.slice(0, 8)}</span>
-                              </div>
-                            </div>
+                        <div className="flex items-center justify-between sm:justify-start gap-8">
+                          <div className="text-right">
+                            <p className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider mb-1">Confidence</p>
+                            <p className="text-2xl font-black font-mono leading-none">{Math.round(doc.confidence_score || 0)}%</p>
                           </div>
-                          
-                          <div className="flex items-center justify-between sm:justify-start gap-8">
-                            <div className="text-right">
-                              <p className="text-[9px] font-black uppercase text-muted-foreground tracking-[0.2em] opacity-40 mb-1">Neural Trust</p>
-                              <p className="text-2xl font-black text-primary leading-none">{Math.round(doc.confidence_score || 0)}%</p>
-                            </div>
-                            <Badge className={cn("h-10 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] border-none shadow-md", statusColor[doc.status])}>
-                              {doc.status}
-                            </Badge>
-                          </div>
+                          <Badge className={cn("h-10 px-6 rounded-none font-bold uppercase tracking-widest text-[10px] border-none", statusColor[doc.status])}>
+                            {doc.status}
+                          </Badge>
                         </div>
                       </div>
                     </CardContent>

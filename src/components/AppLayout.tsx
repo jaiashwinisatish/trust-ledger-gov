@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -19,21 +19,18 @@ import ChatBot from "./ChatBot";
 import SmartSearch from "./SmartSearch";
 import ThemeToggle from "./ThemeToggle";
 import LanguageToggle from "./LanguageToggle";
-
-const navItems = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/documents", label: "Documents", icon: FileText },
-  { to: "/upload", label: "Upload", icon: Upload },
-  { to: "/analytics", label: "Analytics", icon: BarChart3 },
-];
-
 import { useTranslation } from "react-i18next";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { profile, role, signOut } = useAuth();
   const { t } = useTranslation();
   const location = useLocation();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Close mobile menu when navigating
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   const roleLabel = role ? role.charAt(0).toUpperCase() + role.slice(1) : "";
 
@@ -44,123 +41,159 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     { to: "/analytics", label: t("common.analytics"), icon: BarChart3 },
   ];
 
-  const filteredNavItems = navItems.filter(item => {
+  const filteredNavItems = navItems.filter((item) => {
     if (item.to === "/analytics" && role === "citizen") return false;
     return true;
   });
 
   return (
-    <div className="min-h-screen flex bg-[#fbfcfd] dark:bg-[#030711]">
-      {/* Sidebar */}
-      <aside
-        className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 flex flex-col transition-transform lg:translate-x-0 lg:static",
-          "glass-card lg:bg-transparent lg:border-r border-[hsl(var(--sidebar-border))] rounded-none",
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        )}
-      >
-        <div className="p-5 border-b border-border/50">
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-lg premium-gradient flex items-center justify-center glow-shadow">
-              <Shield className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <h2 className="font-bold text-sm leading-tight tracking-tight">{t("sidebar.trustLedger")}</h2>
-              <p className="text-[10px] uppercase font-black tracking-widest opacity-50">{t("sidebar.govService")}</p>
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen flex flex-col bg-background font-sans">
+      {/* Top Header Navigation */}
+      <header className="sticky top-0 z-50 w-full border-b-2 border-border bg-background">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <Link to="/dashboard" className="flex items-center gap-3 group shrink-0">
+              <div className="h-8 w-8 bg-primary flex items-center justify-center group-hover:bg-primary/90 transition-colors">
+                <Shield className="h-4 w-4 text-primary-foreground" />
+              </div>
+              <div>
+                <h1 className="font-serif font-bold text-lg leading-none tracking-tight text-foreground truncate hidden sm:block">
+                  {t("sidebar.trustLedger")}
+                </h1>
+                <h1 className="font-serif font-bold text-lg leading-none tracking-tight text-foreground sm:hidden">
+                  Ledger
+                </h1>
+              </div>
+            </Link>
 
-        <nav className="flex-1 p-3 space-y-1">
-          {filteredNavItems.map(({ to, label, icon: Icon }) => {
-            const active = location.pathname === to;
-            return (
-              <Link
-                key={to}
-                to={to}
-                onClick={() => setMobileOpen(false)}
-                className={cn(
-                  "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300",
-                  active
-                    ? "premium-gradient text-white glow-shadow"
-                    : "hover:bg-accent/50 text-muted-foreground hover:text-foreground"
-                )}
+            {/* Desktop Nav */}
+            <nav className="hidden lg:flex items-center gap-1 ml-4 border-l-2 border-border pl-6">
+              {filteredNavItems.map(({ to, label, icon: Icon }) => {
+                const active = location.pathname === to;
+                return (
+                  <Link
+                    key={to}
+                    to={to}
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-2 font-bold text-sm transition-colors",
+                      active
+                        ? "bg-foreground text-background"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="hidden md:block w-64">
+              <SmartSearch />
+            </div>
+            <div className="hidden md:flex items-center gap-2">
+              <LanguageToggle />
+              <ThemeToggle />
+            </div>
+
+            <div className="hidden md:flex items-center gap-3 pl-4 border-l-2 border-border">
+              <div className="text-right">
+                <p className="text-sm font-bold leading-none">
+                  {profile?.full_name || "User"}
+                </p>
+                <p className="text-xs font-mono uppercase text-muted-foreground">
+                  {roleLabel}
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={signOut}
+                className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-none"
+                title={t("common.signOut")}
               >
-                <Icon className="h-4 w-4" />
-                {label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="p-4 border-t border-border/50">
-          <div className="flex items-center gap-3 mb-4 p-2 rounded-xl bg-accent/20">
-            <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-xs font-black border border-primary/20">
-              {profile?.full_name?.charAt(0)?.toUpperCase() || "U"}
+                <LogOut className="h-4 w-4" />
+              </Button>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold truncate leading-none mb-1">{profile?.full_name || "User"}</p>
-              <p className="text-[10px] font-black uppercase opacity-50 tracking-tighter">{roleLabel}</p>
-            </div>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={signOut}
-            className="w-full justify-start rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/5"
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            {t("common.signOut")}
-          </Button>
-        </div>
-      </aside>
 
-      {/* Mobile overlay */}
-      {mobileOpen && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden" 
-          onClick={() => setMobileOpen(false)} 
-        />
-      )}
-
-      {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 glass-header flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30">
-          <button onClick={() => setMobileOpen(true)} className="lg:hidden p-2 -ml-2 mr-2">
-            <Menu className="h-5 w-5" />
-          </button>
-          <div className="flex-1 max-w-xl">
-            <SmartSearch />
-          </div>
-          <div className="flex items-center gap-4 ml-4">
-            <LanguageToggle />
-            <ThemeToggle />
-            <div className="h-8 w-[1px] bg-border/50 hidden sm:block" />
-            <span className="hidden sm:inline-flex items-center gap-2 px-3 py-1 bg-primary/5 border border-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-widest">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-              {roleLabel}
-            </span>
-          </div>
-        </header>
-        
-        <main className="flex-1 overflow-x-hidden">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={location.pathname}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="p-4 lg:p-8"
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden rounded-none bg-muted focus:ring-0"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {children}
-            </motion.div>
-          </AnimatePresence>
-        </main>
-      </div>
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile Nav Drawer */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden fixed inset-x-0 top-16 bottom-0 bg-background border-t-2 border-border z-50 overflow-y-auto">
+            <div className="p-4 space-y-4 min-h-full flex flex-col pb-20">
+              <div className="w-full md:hidden">
+                <SmartSearch />
+              </div>
+              
+              <div className="flex items-center justify-between py-2 border-b-2 border-border md:hidden">
+                <span className="font-bold text-xs uppercase tracking-wider text-muted-foreground">Preferences</span>
+                <div className="flex items-center gap-2">
+                  <LanguageToggle />
+                  <ThemeToggle />
+                </div>
+              </div>
+
+              <nav className="flex flex-col gap-2 flex-grow">
+                <span className="font-bold text-xs uppercase tracking-wider text-muted-foreground mb-2 mt-4">Navigation</span>
+                {filteredNavItems.map(({ to, label, icon: Icon }) => (
+                  <Link
+                    key={to}
+                    to={to}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-4 font-bold rounded-none border-2 transition-colors",
+                       location.pathname === to ? "bg-primary text-primary-foreground border-primary" : "bg-card text-foreground border-border hover:bg-muted"
+                    )}
+                  >
+                    <Icon className="h-5 w-5" />
+                    {label}
+                  </Link>
+                ))}
+              </nav>
+
+              <div className="flex items-center justify-between p-4 bg-muted border-2 border-border mt-auto">
+                <div>
+                  <p className="font-bold truncate max-w-[150px]">{profile?.full_name || "User"}</p>
+                  <p className="text-xs font-mono uppercase text-muted-foreground mt-1">{roleLabel}</p>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => { setMobileMenuOpen(false); signOut(); }} className="text-destructive font-bold uppercase tracking-wider rounded-none hover:bg-destructive hover:text-destructive-foreground">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 w-full max-w-7xl mx-auto p-4 md:p-8 relative">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
+      </main>
+
+      {/* Floating Chat Agent */}
       <ChatBot />
     </div>
   );
