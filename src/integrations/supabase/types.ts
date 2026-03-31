@@ -112,6 +112,80 @@ export type Database = {
         }
         Relationships: []
       }
+      policy_history: {
+        Row: {
+          changed_by: string
+          created_at: string
+          id: string
+          new_threshold: number
+          notes: string | null
+          old_threshold: number | null
+          policy_setting_id: string | null
+          projected_approved: number
+          projected_flagged: number
+          projected_risk_rate: number
+        }
+        Insert: {
+          changed_by: string
+          created_at?: string
+          id?: string
+          new_threshold: number
+          notes?: string | null
+          old_threshold?: number | null
+          policy_setting_id?: string | null
+          projected_approved?: number
+          projected_flagged?: number
+          projected_risk_rate?: number
+        }
+        Update: {
+          changed_by?: string
+          created_at?: string
+          id?: string
+          new_threshold?: number
+          notes?: string | null
+          old_threshold?: number | null
+          policy_setting_id?: string | null
+          projected_approved?: number
+          projected_flagged?: number
+          projected_risk_rate?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_history_policy_setting_id_fkey"
+            columns: ["policy_setting_id"]
+            isOneToOne: false
+            referencedRelation: "policy_settings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policy_settings: {
+        Row: {
+          confidence_threshold: number
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          confidence_threshold?: number
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          confidence_threshold?: number
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

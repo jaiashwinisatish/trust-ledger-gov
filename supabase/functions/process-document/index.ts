@@ -67,6 +67,14 @@ serve(async (req) => {
     let flagged = false;
     let flagReason = null;
 
+    const { data: policySetting } = await supabase
+      .from("policy_settings")
+      .select("confidence_threshold")
+      .eq("name", "default_policy")
+      .maybeSingle();
+
+    const policyThreshold = Number(policySetting?.confidence_threshold ?? 70);
+
     if (lovableKey) {
       const fileInfo = `File: ${doc.file_name}, Type: ${doc.mime_type}, Category: ${doc?.category || "unknown"}, Title: ${doc?.title || "unknown"}`;
       
@@ -155,9 +163,21 @@ serve(async (req) => {
           },
           anomalies: content.authenticity_check?.risks || [],
         };
-        confidenceScore = content.confidence || content.authenticity_check?.risk_score;
-        flagged = content.is_flagged || !content.authenticity_check?.is_authentic || (content.authenticity_check?.risk_score > 60);
-        flagReason = flagged ? (content.authenticity_check?.risks?.join("; ") || "Suspected fraud or data manipulation") : null;
+        const computedConfidence = Number(content.confidence ?? content.authenticity_check?.risk_score ?? 0);
+        confidenceScore = Number.isFinite(computedConfidence) ? computedConfidence : 0;
+
+        const riskyByAIPolicy = Boolean(content.is_flagged) || !content.authenticity_check?.is_authentic || (Number(content.authenticity_check?.risk_score ?? 0) > 60);
+        const riskyByReviewPolicy = confidenceScore < policyThreshold;
+        flagged = riskyByAIPolicy || riskyByReviewPolicy;
+
+        const reasons: string[] = [];
+        if (content.authenticity_check?.risks?.length) {
+          reasons.push(...content.authenticity_check.risks);
+        }
+        if (riskyByReviewPolicy) {
+          reasons.push(`confidence ${confidenceScore} below policy threshold ${policyThreshold}`);
+        }
+        flagReason = flagged ? (reasons.join("; ") || "Suspected fraud or data manipulation") : null;
 
         if (preview) {
           return new Response(JSON.stringify({ 
@@ -169,7 +189,8 @@ serve(async (req) => {
               department: content.suggested_department,
               priority: content.priority,
               confidence: confidenceScore,
-              flagged
+              flagged,
+              policy_threshold: policyThreshold
             }
           }), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },

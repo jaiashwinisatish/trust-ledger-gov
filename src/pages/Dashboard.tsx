@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Clock, AlertTriangle, CheckCircle, Upload, Eye, ShieldCheck, Activity, Zap } from "lucide-react";
+import { FileText, Clock, AlertTriangle, CheckCircle, Upload, Eye, ShieldCheck, Activity, Zap, SlidersHorizontal, Gauge, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { format, subDays, isSameDay } from "date-fns";
@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 interface DocStats {
   total: number;
@@ -37,11 +38,18 @@ const item = {
 export default function Dashboard() {
   const { user, role, profile } = useAuth();
   const { t } = useTranslation();
+  const canManagePolicy = role === "admin" || role === "officer";
   const [stats, setStats] = useState<DocStats>({ total: 0, pending: 0, flagged: 0, approved: 0 });
   const [recentDocs, setRecentDocs] = useState<any[]>([]);
   const [blockchainStatus, setBlockchainStatus] = useState<"connecting" | "healthy" | "error">("healthy");
   const [trendData, setTrendData] = useState<any[]>([]);
   const [insights, setInsights] = useState<any[]>([]);
+  const [confidenceScores, setConfidenceScores] = useState<number[]>([]);
+  const [policySettingId, setPolicySettingId] = useState<string | null>(null);
+  const [policyThreshold, setPolicyThreshold] = useState(70);
+  const [savedPolicyThreshold, setSavedPolicyThreshold] = useState(70);
+  const [policySaving, setPolicySaving] = useState(false);
+  const [policyHistory, setPolicyHistory] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -96,6 +104,39 @@ export default function Dashboard() {
         setInsights(newInsights);
       }
 
+      const { data: allScores } = await supabase
+        .from("documents")
+        .select("confidence_score");
+
+      if (allScores) {
+        setConfidenceScores(
+          allScores
+            .map((row) => Number(row.confidence_score ?? 0))
+            .filter((score) => Number.isFinite(score))
+        );
+      }
+
+      const { data: policySetting } = await supabase
+        .from("policy_settings")
+        .select("id, confidence_threshold")
+        .eq("name", "default_policy")
+        .maybeSingle();
+
+      if (policySetting) {
+        const threshold = Number(policySetting.confidence_threshold ?? 70);
+        setPolicySettingId(policySetting.id);
+        setPolicyThreshold(threshold);
+        setSavedPolicyThreshold(threshold);
+      }
+
+      const { data: policyHistoryRows } = await supabase
+        .from("policy_history")
+        .select("id, old_threshold, new_threshold, projected_flagged, projected_approved, projected_risk_rate, created_at, changed_by")
+        .order("created_at", { ascending: false })
+        .limit(6);
+
+      setPolicyHistory(policyHistoryRows || []);
+
       // Chain Health (gracefully handles environments without blockchain columns)
       const { data: auditTrail, error: auditTrailError } = await supabase
         .from("audit_logs")
@@ -137,6 +178,113 @@ export default function Dashboard() {
     reviewed: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
     approved: "bg-success/20 text-success",
     flagged: "bg-destructive/20 text-destructive",
+  };
+
+  const policyForecast = useMemo(() => {
+    const totalScores = confidenceScores.length;
+    if (!totalScores) {
+      return {
+        flagged: 0,
+        approved: 0,
+        riskRate: 0,
+        efficiency: 0,
+        signal: "Insufficient data",
+      };
+    }
+
+    const flagged = confidenceScores.filter((score) => score < policyThreshold).length;
+    const approved = totalScores - flagged;
+    const riskRate = Math.round((flagged / totalScores) * 100);
+    const efficiency = Math.round((approved / totalScores) * 100);
+
+    let signal = "Balanced posture";
+    if (policyThreshold >= 85) signal = "Strict policy mode";
+    if (policyThreshold <= 55) signal = "Fast-lane policy mode";
+
+    return { flagged, approved, riskRate, efficiency, signal };
+  }, [confidenceScores, policyThreshold]);
+
+  const savePolicy = async () => {
+    if (!user || !canManagePolicy) return;
+    if (policyThreshold === savedPolicyThreshold) {
+      toast.info("No policy changes to save");
+      return;
+    }
+
+    setPolicySaving(true);
+    try {
+      let settingId = policySettingId;
+
+      if (settingId) {
+        const { error: updateError } = await supabase
+          .from("policy_settings")
+          .update({
+            confidence_threshold: policyThreshold,
+            updated_by: user.id,
+          })
+          .eq("id", settingId);
+
+        if (updateError) throw updateError;
+      } else {
+        const { data: insertSetting, error: insertError } = await supabase
+          .from("policy_settings")
+          .insert({
+            name: "default_policy",
+            confidence_threshold: policyThreshold,
+            updated_by: user.id,
+          })
+          .select("id")
+          .single();
+
+        if (insertError) throw insertError;
+        settingId = insertSetting.id;
+        setPolicySettingId(settingId);
+      }
+
+      const { error: historyError } = await supabase
+        .from("policy_history")
+        .insert({
+          policy_setting_id: settingId,
+          changed_by: user.id,
+          old_threshold: savedPolicyThreshold,
+          new_threshold: policyThreshold,
+          projected_flagged: policyForecast.flagged,
+          projected_approved: policyForecast.approved,
+          projected_risk_rate: policyForecast.riskRate,
+          notes: "Updated from dashboard policy simulator",
+        });
+
+      if (historyError) throw historyError;
+
+      await supabase.functions.invoke("audit-event", {
+        body: {
+          documentId: null,
+          action: "policy_threshold_changed",
+          details: {
+            old_threshold: savedPolicyThreshold,
+            new_threshold: policyThreshold,
+            projected_flagged: policyForecast.flagged,
+            projected_approved: policyForecast.approved,
+            projected_risk_rate: policyForecast.riskRate,
+          },
+          userId: user.id,
+        },
+      });
+
+      const { data: policyHistoryRows } = await supabase
+        .from("policy_history")
+        .select("id, old_threshold, new_threshold, projected_flagged, projected_approved, projected_risk_rate, created_at, changed_by")
+        .order("created_at", { ascending: false })
+        .limit(6);
+
+      setPolicyHistory(policyHistoryRows || []);
+      setSavedPolicyThreshold(policyThreshold);
+      toast.success("Review policy saved and activated");
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to save policy");
+    } finally {
+      setPolicySaving(false);
+    }
   };
 
   return (
@@ -271,6 +419,122 @@ export default function Dashboard() {
           </Card>
         </motion.div>
       </div>
+
+      <motion.div variants={item}>
+        <Card className="border-2 border-border rounded-none shadow-none bg-card">
+          <CardHeader className="border-b-2 border-border pb-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <SlidersHorizontal className="h-5 w-5 text-primary" />
+                <div>
+                  <CardTitle className="text-lg font-bold font-serif">Policy Simulator</CardTitle>
+                  <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">Preview impact before changing review rules</p>
+                </div>
+              </div>
+              <Badge variant="outline" className="rounded-none font-bold uppercase tracking-wider">
+                Threshold {policyThreshold}%
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6 space-y-6">
+            <div className="space-y-3">
+              <div className="flex justify-between text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
+                <span>Auto-flag confidence threshold</span>
+                <span>{policyForecast.signal}</span>
+              </div>
+              <input
+                type="range"
+                min={40}
+                max={95}
+                step={1}
+                value={policyThreshold}
+                onChange={(event) => setPolicyThreshold(Number(event.target.value))}
+                disabled={!canManagePolicy}
+                className="w-full h-2 accent-[hsl(var(--primary))]"
+              />
+              <div className="flex justify-between text-[10px] font-bold text-muted-foreground">
+                <span>40% Fast</span>
+                <span>95% Strict</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="p-4 border-2 border-border bg-muted/20">
+                <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground mb-2">Projected Flags</p>
+                <p className="text-3xl font-black text-destructive tabular-nums">{policyForecast.flagged}</p>
+              </div>
+              <div className="p-4 border-2 border-border bg-muted/20">
+                <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground mb-2">Estimated Throughput</p>
+                <p className="text-3xl font-black tabular-nums">{policyForecast.efficiency}%</p>
+              </div>
+              <div className="p-4 border-2 border-border bg-muted/20">
+                <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground mb-2">Risk Exposure</p>
+                <p className="text-3xl font-black tabular-nums">{policyForecast.riskRate}%</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 border-2 border-border flex items-center gap-3">
+                <Gauge className="h-5 w-5 text-primary" />
+                <p className="text-sm font-bold leading-tight">Current setting favors {policyForecast.efficiency >= 70 ? "faster approvals" : "deeper manual review"}.</p>
+              </div>
+              <div className="p-4 border-2 border-border flex items-center gap-3">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                <p className="text-sm font-bold leading-tight">If applied now, around {policyForecast.flagged} records move to analyst queue.</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-t-2 border-border pt-5">
+              <p className="text-xs font-bold text-muted-foreground">
+                Active threshold: <span className="text-foreground">{savedPolicyThreshold}%</span>
+              </p>
+              <div className="flex items-center gap-2">
+                {!canManagePolicy && (
+                  <Badge variant="outline" className="rounded-none font-bold uppercase tracking-wider">
+                    Read-only (Citizen)
+                  </Badge>
+                )}
+                {canManagePolicy && (
+                  <Button
+                    onClick={savePolicy}
+                    disabled={policySaving || policyThreshold === savedPolicyThreshold}
+                    className="rounded-none font-bold uppercase tracking-wider"
+                  >
+                    {policySaving ? "Saving..." : "Save As Active Policy"}
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Recent policy changes</p>
+              {policyHistory.length === 0 ? (
+                <div className="p-4 border-2 border-dashed border-border text-sm text-muted-foreground">
+                  No policy history found yet.
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {policyHistory.map((entry) => (
+                    <div key={entry.id} className="p-3 border-2 border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <div>
+                          <p className="text-sm font-bold">
+                            {Number(entry.old_threshold ?? 0)}% {"->"} {Number(entry.new_threshold)}%
+                          </p>
+                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                          {format(new Date(entry.created_at), "MMM d, yyyy HH:mm")}
+                        </p>
+                      </div>
+                      <div className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
+                        Flagged {entry.projected_flagged} | Approved {entry.projected_approved} | Risk {Number(entry.projected_risk_rate)}%
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       <motion.div variants={item} className="flex flex-col sm:flex-row gap-4">
         <Button size="lg" className="rounded-none h-14 px-8 font-bold uppercase tracking-widest transition-transform hover:-translate-y-1" asChild>
